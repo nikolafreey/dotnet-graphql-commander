@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using HotChocolate;
 
 namespace CommanderGraphQL.Models
 {
