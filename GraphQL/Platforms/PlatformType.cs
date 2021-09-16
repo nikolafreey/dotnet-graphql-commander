@@ -4,7 +4,7 @@ using CommanderGraphQL.Models;
 using HotChocolate;
 using HotChocolate.Types;
 
-namespace CommanderGraphQL.Platforms
+namespace CommanderGraphQL.GraphQL.Platforms
 {
     public class PlatformType : ObjectType<Platform>
     {
