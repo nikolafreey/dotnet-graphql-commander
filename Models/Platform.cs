@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace CommanderGraphQL.Models
@@ -9,5 +10,6 @@ namespace CommanderGraphQL.Models
         [Required]
         public string Name { get; set; }
         public string LicenceKey { get; set; }
+        public ICollection<Command> Commands { get; set; } = new List<Command>();
     }
 }
