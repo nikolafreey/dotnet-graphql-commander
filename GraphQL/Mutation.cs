@@ -1,16 +1,19 @@
+using System.Threading;
 using System.Threading.Tasks;
 using CommanderGraphQL.Data;
+using CommanderGraphQL.GraphQL.Commands;
 using CommanderGraphQL.GraphQL.Platforms;
 using CommanderGraphQL.Models;
 using HotChocolate;
 using HotChocolate.Data;
+using HotChocolate.Subscriptions;
 
 namespace CommanderGraphQL.GraphQL
 {
     public class Mutation
     {
         [UseDbContext(typeof(AppDbContext))]
-        public async Task<AddPlatformPayload> AddPlatformAsync(AddPlatformInput input, [ScopedService] AppDbContext context)
+        public async Task<AddPlatformPayload> AddPlatformAsync(AddPlatformInput input, [ScopedService] AppDbContext context, [Service] ITopicEventSender eventSender, CancellationToken cancellationToken)
         {
             var platform = new Platform
             {
@@ -20,7 +23,26 @@ namespace CommanderGraphQL.GraphQL
             context.Platforms.Add(platform);
             await context.SaveChangesAsync();
 
+            await eventSender.SendAsync(nameof(Subscription.OnPlatformAdded), platform, cancellationToken);
+
             return new AddPlatformPayload(platform);
         }
+
+        [UseDbContext(typeof(AppDbContext))]
+        public async Task<AddCommandPayload> AddCommandAsync(AddCommandInput input, [ScopedService] AppDbContext context)
+        {
+            var command = new Command
+            {
+                HowTo = input.HowTo,
+                CommandLine = input.CommandLine,
+                PlatformId = input.PlatformId
+            };
+
+            context.Commands.Add(command);
+            await context.SaveChangesAsync();
+
+            return new AddCommandPayload(command);
+        }
+
     }
 }
